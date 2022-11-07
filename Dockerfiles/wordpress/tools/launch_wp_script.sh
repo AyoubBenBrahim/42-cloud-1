@@ -18,10 +18,12 @@ if ! wp core is-installed; then
     mv /var/www/wordpress/*.png /var/www/wordpress/wp-content/themes/twentytwentytwo/assets/images/
     sed -i "s/'footer-default',/ /" /var/www/wordpress/wp-content/themes/twentytwentytwo/inc/block-patterns.php
 
-    wp post create --post_title="I am $IP_ADDR" --post_content="Hi from 1337, the Coding School from Morocco" --post_status=publish --post_author=$WP_USER --path=/var/www/wordpress  --allow-root 
+    # wp post create --post_title="I am $IP_ADDR" --post_content="Hi from 1337, the Coding School from Morocco" --post_status=publish --post_author=$WP_USER --path=/var/www/wordpress  --allow-root 
 
-    echo "DELETE FROM cloud_db.wp_posts WHERE wp_posts.post_name = 'hello-world';" | mariadb -h mariadb -P$DB_PORT -u$DB_USER -p$DB_PASSWORD
+    # echo "DELETE FROM cloud_db.wp_posts WHERE wp_posts.post_name = 'hello-world';" | mariadb -h mariadb -P$DB_PORT -u$DB_USER -p$DB_PASSWORD
     # echo "DELETE FROM cloud_db.wp_posts WHERE wp_posts.id > 4;" | mariadb -h mariadb -P$DB_PORT -u$DB_USER -p$DB_PASSWORD
+    echo "UPDATE cloud_db.wp_posts SET wp_posts.post_content = 'Hi from 1337, the Coding School from Morocco', wp_posts.post_title = 'I am $IP_ADDR' WHERE wp_posts.post_name = 'hello-world';" | mariadb -h mariadb -P$DB_PORT -u$DB_USER -p$DB_PASSWORD
+
 fi
 
 php-fpm7.3 --nodaemonize
