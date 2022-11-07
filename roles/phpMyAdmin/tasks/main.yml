@@ -1,0 +1,33 @@
+---
+# tasks file for phpMyAdmin
+
+  - name: build phpMyAdmin image from the Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: phpmyadmin
+      source: build
+      build:
+        path: /home/Dockerfiles/phpmyadmin
+      state: present
+
+  - name: run phpMyAdmin container
+    become: yes
+    community.docker.docker_container:
+      image: phpmyadmin
+      name: phpmyadmin
+      ports:
+        - "7000:7000"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env_file: /home/Dockerfiles/.env
+      volumes:
+        - phpmyadmin_vol:/var/www/phpmyadmin
+  
+  - name: Delete content & directory
+    become: yes
+    ansible.builtin.file:
+      path: /home/Dockerfiles
+      state: absent

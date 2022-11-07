@@ -1,0 +1,43 @@
+---
+# tasks file for docker
+  - name: Ping my hosts
+    ansible.builtin.ping:
+
+  - name: Create wordpress Volume
+    become: yes
+    community.docker.docker_volume:
+      name: wordpress_vol
+
+  - name: Create mariadb Volume
+    become: yes
+    community.docker.docker_volume:
+      name: mariadb_vol
+  
+  - name: Create phpMyAdmin Volume
+    become: yes
+    community.docker.docker_volume:
+      name: phpmyadmin_vol
+
+  - name: Create underlay network
+    become: yes
+    community.docker.docker_network:
+      name: inception_network
+
+  - name: Copy files to the remote machine
+    become: yes
+    become_method: sudo
+    ansible.builtin.copy:
+      src: ./Dockerfiles
+      dest: /home
+      mode: preserve
+
+  # - name: aaaaaaaaaaaaaaaa
+  #   become: yes
+  #   become_method: sudo
+  #   ansible.builtin.shell: |
+  #    export IP_ADDR=$(ip -4 -o addr show eth0 | awk '{print $4}' | awk 'FNR == 1 {print}' | awk '{split($0,tab,"/"); print tab[1]}')
+  #    echo $IP_ADDR > /home/IP_ADDR.txt
+
+  #    exit 0
+  
+

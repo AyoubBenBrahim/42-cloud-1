@@ -1,0 +1,29 @@
+---
+# tasks file for web_server
+
+  - name: build nginx image from the local Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: nginx
+      source: build
+      build:
+        path: /home/Dockerfiles/nginx
+      state: present
+
+  - name: run nginx container
+    become: yes
+    community.docker.docker_container:
+      image: nginx
+      name: nginx
+      ports:
+        - "8080:8080"
+        - "443:443"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env_file: /home/Dockerfiles/.env
+      volumes:
+        - wordpress_vol:/var/www/wordpress
+        - phpmyadmin_vol:/var/www/phpmyadmin

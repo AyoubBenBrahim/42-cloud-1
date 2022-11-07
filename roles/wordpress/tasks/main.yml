@@ -1,0 +1,34 @@
+---
+# tasks file for wordpress
+
+  - name: build wordpress image from the Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: wordpress
+      source: build
+      build:
+        path: /home/Dockerfiles/wordpress
+      state: present
+
+  - name: Getting SSH_CONNECTION
+    ansible.builtin.shell: echo $SSH_CONNECTION | awk '{print $3}'
+    register: ip_var
+    
+  - name: run wordpress container
+    become: yes
+    community.docker.docker_container:
+      image: wordpress
+      name: wordpress
+      ports:
+        - "9000:9000"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env:
+          IP_ADDR: "{{ ip_var.stdout }}"
+      env_file: /home/Dockerfiles/.env
+      volumes:
+        - wordpress_vol:/var/www/wordpress
+  

@@ -1,0 +1,30 @@
+---
+# tasks file for database
+
+  - name: build mariadb image from the Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: mariadb
+      source: build
+      build:
+        path: /home/Dockerfiles/mariadb
+      state: present
+ 
+  - name: run mariadb container
+    become: yes
+    community.docker.docker_container:
+      image: mariadb
+      name: mariadb
+      ports:
+        - "3306:3306"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env_file: /home/Dockerfiles/.env
+      volumes:
+        - mariadb_vol:/var/lib/mysql
+
+  # - name: remove 'Proudly powered by WordPress' from footer
+  #   ansible.builtin.shell: sed -i "s/'footer-default',/ /" /var/lib/docker/volumes/wordpress_vol/_data/wp-content/themes/twentytwentytwo/inc/block-patterns.php

@@ -1,0 +1,107 @@
+---
+# tasks file for services
+
+- name: default Tag, Nothing
+  ansible.builtin.shell: echo "nothing" >/dev/null
+  tags:
+    - nothing
+
+- name: Stop mariadb Container
+  docker_container:
+    name: mariadb
+    state: stopped
+  tags:
+    - stop_mariadb
+
+- name: Stop Nginx Container
+  docker_container:
+    name: nginx
+    state: stopped
+  tags:
+    - stop_nginx
+
+- name: Stop Wordpress Container
+  docker_container:
+    name: wordpress
+    state: stopped
+  tags:
+    - stop_wordpress
+
+- name: Stop Phpmyadmin Container
+  docker_container:
+    name: phpmyadmin
+    state: stopped
+  tags:
+    - stop_phpmyadmin
+
+- name: Start mariadb Container
+  docker_container:
+    name: mariadb
+    state: started
+  tags:
+    - start_mariadb
+
+- name: Start nginx Container
+  docker_container:
+    name: nginx
+    state: started
+  tags:
+    - start_nginx
+  
+- name: Start phpmyadmin Container
+  docker_container:
+    name: phpmyadmin
+    state: started
+  tags:
+    - start_phpmyadmin
+
+- name: Start wordpress Container
+  docker_container:
+    name: wordpress
+    state: started
+  tags:
+    - start_wordpress
+
+- name: Stop running containers
+  docker_container:
+    name: "{{ item }}"
+    state: stopped
+  tags:
+    stop_all
+  loop: 
+    - mariadb
+    - phpmyadmin
+    - nginx
+    - wordpress
+
+- name: Start offline containers
+  docker_container:
+    name: "{{ item }}"
+    state: started
+  tags:
+    start_all
+  loop: 
+    - mariadb
+    - phpmyadmin
+    - nginx
+    - wordpress
+
+# - name: print var value to stdout
+#   debug:
+#     msg: confirmation  = {{ confirmation }}
+#   when: confirmation == "yes"
+#   tags:
+#     - print
+
+- name: clear docker containers, images, volumes if exist
+  become: yes
+  become_method: sudo
+  when: confirmation == "yes"
+  ansible.builtin.shell: |
+      docker rm -f $(docker ps -a -q)
+      docker rmi -f $(docker image ls -q)
+      docker volume rm -f $(docker volume ls -q)
+      docker network rm $(docker network ls -q)
+      exit 0 
+  tags:
+    - rm_all

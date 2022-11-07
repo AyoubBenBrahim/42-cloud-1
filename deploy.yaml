@@ -1,0 +1,13 @@
+---
+- name: my Cloud Infra Settings..
+  hosts: all
+  vars:
+    confirmation: no
+    srv: no
+  roles:
+      - docker
+      - web_server
+      - database
+      - wordpress
+      - phpMyAdmin
+      - { role: services, when: srv == 'yes' }
